@@ -21,9 +21,14 @@ RUN newaliases && \
     useradd -s /sbin/nologin filter && \
     mkdir -p /var/spool/filter/ && \
     chown -R filter.filter /var/spool/filter
+# 不正なメール中継ができないよう、SASL機能を導入
+RUN dnf -y install dovecot
+COPY ./Dockerfiles/dovecot.conf /etc/dovecot/.
+COPY ./Dockerfiles/10-*.conf /etc/dovecot/conf.d/
 
-RUN systemctl enable postfix
-EXPOSE 10025
+RUN systemctl enable postfix && \
+    systemctl enable dovecot
+EXPOSE 25 10025
 
 # COPY ./Dockerfiles/start.sh /usr/local/etc/start.sh
 # RUN chmod +x /usr/local/etc/start.sh
