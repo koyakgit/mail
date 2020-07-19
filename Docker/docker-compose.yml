@@ -1,0 +1,22 @@
+version: "3.7"
+services:
+  postfix:
+    image: postfix
+    container_name: postfix
+    hostname: postfix
+    privileged: true
+    command: /sbin/init
+#    command: >
+#      mongod
+#      --replSet replset
+#      --auth --keyFile /etc/mongod-keyfile
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: password
+#    volumes:
+#      - ./volumes/mongodb/root:/root:ro # Initialize script
+#      - ./volumes/mongodb/etc/mongod-keyfile:/etc/mongod-keyfile:ro # Permission: 600
+    ports:
+      - 25:25
+      - 10025:10025
+    restart: always

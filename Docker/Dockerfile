@@ -25,6 +25,6 @@ RUN newaliases && \
 RUN systemctl enable postfix
 EXPOSE 10025
 
-COPY ./Dockerfiles/start.sh /usr/local/etc/start.sh
-RUN chmod +x /usr/local/etc/start.sh
+# COPY ./Dockerfiles/start.sh /usr/local/etc/start.sh
+# RUN chmod +x /usr/local/etc/start.sh
 # ENTRYPOINT [ "sh", "/usr/local/etc/start.sh" ]
