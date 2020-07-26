@@ -15,7 +15,7 @@ ENV TZ=Asia/Tokyo LANG=ja_JP.UTF-8 LANGUAGE=ja_JP:ja LC_ALL=ja_JP.UTF-8
 # Install Postfix =========================================
 RUN dnf install -y postfix passwd
 COPY ./Dockerfiles/main.cf /etc/postfix/.
-# COPY ./Dockerfiles/master.cf /etc/postfix/.
+COPY ./Dockerfiles/master.cf /etc/postfix/.
 # Postfix動作用のエイリアス設定＋コンテンツフィルタで使用する疑似ユーザの作成（シェル実行不可）
 RUN newaliases && \
     useradd -s /sbin/nologin filter && \
@@ -34,7 +34,7 @@ COPY ./Dockerfiles/10-*.conf /etc/dovecot/conf.d/
 RUN systemctl enable postfix && \
     systemctl enable dovecot && \
     systemctl enable saslauthd
-EXPOSE 25 80 993 995 587 10025
+EXPOSE 9205 80 993 995 587 10025
 
 # COPY ./Dockerfiles/start.sh /usr/local/etc/start.sh
 # RUN chmod +x /usr/local/etc/start.sh

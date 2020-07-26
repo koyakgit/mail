@@ -2,7 +2,7 @@
 
 # execute Postfix
 
-declare -i PROCESS_COUNT
+# declare -i PROCESS_COUNT
 while true
 do
   # PROCESS_COUNT=`ps -ef | grep postfix | wc -l`
