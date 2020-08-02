@@ -1,0 +1,6 @@
+# https://smtps.jp/docs/integrate/si/postfix/index.html
+localhost :
+localhost.localdomain :
+# YOUR-HOSTNAME :
+postfix :
+*     smtp:[relay]:1025

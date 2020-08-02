@@ -6,13 +6,6 @@ services:
     hostname: postfix
     privileged: true
     command: /sbin/init
-#    command: >
-#      mongod
-#      --replSet replset
-#      --auth --keyFile /etc/mongod-keyfile
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: password
 #    volumes:
 #      - ./volumes/mongodb/root:/root:ro # Initialize script
 #      - ./volumes/mongodb/etc/mongod-keyfile:/etc/mongod-keyfile:ro # Permission: 600
@@ -25,25 +18,20 @@ services:
     restart: always
 
   postfix-client:
-#    build:
-#      context: .
-#      dockerfile: ./Dockerfile_test_client
     image: postfix-client
     container_name: postfix-client
     hostname: postfix-client
     privileged: true
-#    command: /sbin/init
-#    command: >
-#      mongod
-#      --replSet replset
-#      --auth --keyFile /etc/mongod-keyfile
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: password
-#    volumes:
-#      - ./volumes/mongodb/root:/root:ro # Initialize script
-#      - ./volumes/mongodb/etc/mongod-keyfile:/etc/mongod-keyfile:ro # Permission: 600
-#    ports:
-#      - 25:25
-#      - 10025:10025
+    volumes:
+      - ./Dockerfiles/sendmail.py /usr/share/sendmail.py
     restart: always
+
+  relay-server:
+    image: mailhog/mailhog
+    container_name: relay
+    hostname: relay
+    ports:
+      - 1025:1025
+      - 8025:8025
+    restart: always
+

@@ -13,27 +13,34 @@ RUN dnf -y install glibc-locale-source glibc-langpack-ja && \
 ENV TZ=Asia/Tokyo LANG=ja_JP.UTF-8 LANGUAGE=ja_JP:ja LC_ALL=ja_JP.UTF-8
 
 # Install Postfix =========================================
-RUN dnf install -y postfix passwd
-COPY ./Dockerfiles/main.cf /etc/postfix/.
-COPY ./Dockerfiles/master.cf /etc/postfix/.
+RUN dnf install -y postfix dovecot mailx passwd
+COPY ./Dockerfiles/postfix/main.cf /etc/postfix/.
+# COPY ./Dockerfiles/postfix/master.cf /etc/postfix/.
+# COPY ./Dockerfiles/postfix/relay_recipients /etc/postfix/.
+# COPY ./Dockerfiles/postfix/transport /etc/postfix/.
 # Postfix動作用のエイリアス設定＋コンテンツフィルタで使用する疑似ユーザの作成（シェル実行不可）
-RUN newaliases && \
-    useradd -s /sbin/nologin filter && \
-    mkdir -p /var/spool/filter/ && \
-    chown -R filter.filter /var/spool/filter
+#RUN newaliases && \
+#    useradd -s /sbin/nologin filter && \
+#    mkdir -p /var/spool/filter/ && \
+#    chown -R filter.filter /var/spool/filter && \
+#    mkfifo /var/spool/postfix/public/pickup
     
-# 不正なメール中継ができないよう、SASL機能を導入
-RUN dnf -y install -y cyrus-sasl cyrus-sasl-plain
-COPY ./Dockerfiles/smtpd.conf /etc/sasl2/.
+# POP/IMAPサーバの設定
+COPY ./Dockerfiles/dovecot/dovecot.conf /etc/dovecot/.
+COPY ./Dockerfiles/dovecot/10-*.conf /etc/dovecot/conf.d/
 
-# 受信用メールサーバのインストール
-RUN dnf -y install dovecot
-COPY ./Dockerfiles/dovecot.conf /etc/dovecot/.
-COPY ./Dockerfiles/10-*.conf /etc/dovecot/conf.d/
+# メールクライアントのインストール
+#   メールボックスはMaildirを参照するように設定
+# RUN dnf -y install mailx && \
+RUN echo 'export MAIL=$HOME/Maildir' >> /etc/profile.d/mail.sh && \
+    useradd cent
+#     useradd cent && \
+#     passwd cent
 
 RUN systemctl enable postfix && \
-    systemctl enable dovecot && \
-    systemctl enable saslauthd
+    systemctl enable dovecot
+#    systemctl enable dovecot && \
+#    systemctl enable saslauthd
 EXPOSE 9205 80 993 995 587 10025
 
 # COPY ./Dockerfiles/start.sh /usr/local/etc/start.sh

@@ -13,14 +13,10 @@ ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 ENV TZ JST-9
 
-# update pip to latest
-RUN pip install --upgrade pip && \
-    pip install requests
+# Install for sending test mail.
+RUN apt-get install -y telnet lsof
 
 COPY ./Dockerfiles/sendmail.py /usr/local/.
-
-EXPOSE 80
-
 COPY ./Dockerfiles/start.sh /usr/local/etc/start.sh
 RUN chmod +x /usr/local/etc/start.sh
 ENTRYPOINT [ "sh", "/usr/local/etc/start.sh" ]
