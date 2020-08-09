@@ -18,9 +18,10 @@ ENV POSTFIX_HOME=/etc/postfix FILTER_HOME=/home/filter SPOOL_DIR=/var/spool/filt
 #   メールボックスはMaildirを参照するように設定
 RUN echo 'export MAIL=$HOME/Maildir' >> /etc/profile.d/mail.sh && \
     useradd cent && \
-    useradd filter && \
+    useradd -s /sbin/nologin filter && \
     mkdir $SPOOL_DIR && \
-    mkdir $FILTER_HOME/script
+    mkdir $FILTER_HOME/script && \
+    mkdir /tmp/logs
     
 COPY ./Dockerfiles/postfix/main.cf $POSTFIX_HOME/.
 COPY ./Dockerfiles/postfix/master.cf $POSTFIX_HOME/.
@@ -29,7 +30,7 @@ COPY ./Dockerfiles/postfix/filter.sh $FILTER_HOME/script/.
 RUN chown -R filter:filter $SPOOL_DIR && \
     chmod -R 700 $SPOOL_DIR && \
     chown -R filter:filter $FILTER_HOME && \
-    chmod -R 777 $FILTER_HOME
+    chmod -R 700 $FILTER_HOME
 
 # postfixが参照できるようにする
 

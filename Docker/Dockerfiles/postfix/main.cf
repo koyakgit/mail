@@ -448,6 +448,7 @@ home_mailbox = Maildir/
 #
 #mail_spool_directory = /var/mail
 #mail_spool_directory = /var/spool/mail
+mail_spool_directory = /var/spool/filter/
 
 # The mailbox_command parameter specifies the optional external
 # command to use instead of mailbox delivery. The command is run as
