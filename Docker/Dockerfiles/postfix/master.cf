@@ -10,6 +10,11 @@
 #               (yes)   (yes)   (no)    (never) (100)
 # ==========================================================================
 smtp      inet  n       -       n       -       -       smtpd
+      -o content_filter=filter:dummy
+#postlog   unix-dgram n  -       n       -       1       postlogd
+postlog   unix  n       -       n       -       1       postlogd
+filter    unix  -       n       n       -       10      pipe
+  flags=Rq user=filter argv=/home/filter/script/filter.sh -f ${sender} -- ${recipient}
 #smtp      inet  n       -       n       -       1       postscreen
 #smtpd     pass  -       -       n       -       -       smtpd
 #dnsblog   unix  -       -       n       -       0       dnsblog

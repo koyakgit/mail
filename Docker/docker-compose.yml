@@ -9,6 +9,13 @@ services:
 #    volumes:
 #      - ./volumes/mongodb/root:/root:ro # Initialize script
 #      - ./volumes/mongodb/etc/mongod-keyfile:/etc/mongod-keyfile:ro # Permission: 600
+    expose:
+      - "25"
+      - "993"
+      - "995"
+      - "587"
+      - "9205"
+      - "10025"
     ports:
       - 993:993
       - 995:995
