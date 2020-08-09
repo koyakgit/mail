@@ -1,8 +1,7 @@
-# For development by VSCode
+# For Mail filtering test
 
 # Main stage -------------------------------------------------
 FROM centos:8.1.1911
-#FROM centos:latest
 LABEL Name=FRONTEO Version=0.0.1
 
 # Localize ===============================================
@@ -31,17 +30,6 @@ RUN chown -R filter:filter $SPOOL_DIR && \
     chmod -R 700 $SPOOL_DIR && \
     chown -R filter:filter $FILTER_HOME && \
     chmod -R 700 $FILTER_HOME
-
-# postfixが参照できるようにする
-
-# COPY ./Dockerfiles/postfix/relay_recipients /etc/postfix/.
-# COPY ./Dockerfiles/postfix/transport /etc/postfix/.
-# Postfix動作用のエイリアス設定＋コンテンツフィルタで使用する疑似ユーザの作成（シェル実行不可）
-#RUN newaliases && \
-#    useradd -s /sbin/nologin filter && \
-#    mkdir -p /var/spool/filter/ && \
-#    chown -R filter.filter /var/spool/filter && \
-#    mkfifo /var/spool/postfix/public/pickup
     
 # POP/IMAPサーバの設定
 COPY ./Dockerfiles/dovecot/dovecot.conf /etc/dovecot/.
@@ -49,10 +37,3 @@ COPY ./Dockerfiles/dovecot/10-*.conf /etc/dovecot/conf.d/
 
 RUN systemctl enable postfix && \
     systemctl enable dovecot
-#    systemctl enable dovecot && \
-#    systemctl enable saslauthd
-# EXPOSE 25 80 993 995 587 10025
-
-# COPY ./Dockerfiles/start.sh /usr/local/etc/start.sh
-# RUN chmod +x /usr/local/etc/start.sh
-# ENTRYPOINT [ "sh", "/usr/local/etc/start.sh" ]
