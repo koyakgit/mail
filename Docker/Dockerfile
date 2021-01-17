@@ -10,30 +10,30 @@ RUN dnf -y update && \
     localedef -i /usr/share/i18n/locales/ja_JP -f UTF-8 /usr/lib/locale/ja_JP.UTF-8
 ENV TZ=Asia/Tokyo LANG=ja_JP.UTF-8 LANGUAGE=ja_JP:ja LC_ALL=ja_JP.UTF-8
 
-# Install Postfix =========================================
-RUN dnf install -y postfix dovecot mailx passwd lsof
-ENV POSTFIX_HOME=/etc/postfix FILTER_HOME=/home/filter SPOOL_DIR=/var/spool/filter
+# Install openssl
+# 証明書作成のため、opensslをインストール
+# バージョン、環境確認方法
+# openssl version -a
+RUN dnf -y install openssl
 
-#   メールボックスはMaildirを参照するように設定
-RUN echo 'export MAIL=$HOME/Maildir' >> /etc/profile.d/mail.sh && \
-    useradd cent && \
-    useradd -s /sbin/nologin filter && \
-    mkdir $SPOOL_DIR && \
-    mkdir $FILTER_HOME/script && \
-    mkdir /tmp/logs
-    
-COPY ./Dockerfiles/postfix/main.cf $POSTFIX_HOME/.
-COPY ./Dockerfiles/postfix/master.cf $POSTFIX_HOME/.
-COPY ./Dockerfiles/postfix/filter.sh $FILTER_HOME/script/.
+# CAシェルの用意
+RUN dnf -y install wget
+WORKDIR /tmp
+RUN wget http://ftp.riken.jp/Linux/centos/7/os/x86_64/Packages/openssl-1.0.2k-19.el7.x86_64.rpm
+RUN rpm2cpio openssl-1.0.2k-19.el7.x86_64.rpm | cpio -id ./etc/pki/tls/misc/CA
+RUN mv -i etc/pki/tls/misc/CA /etc/pki/tls/misc/
+RUN rm -rf etc && rm -f openssl*
+WORKDIR /
 
-RUN chown -R filter:filter $SPOOL_DIR && \
-    chmod -R 700 $SPOOL_DIR && \
-    chown -R filter:filter $FILTER_HOME && \
-    chmod -R 700 $FILTER_HOME
-    
-# POP/IMAPサーバの設定
-COPY ./Dockerfiles/dovecot/dovecot.conf /etc/dovecot/.
-COPY ./Dockerfiles/dovecot/10-*.conf /etc/dovecot/conf.d/
+# opensslの設定更新
+COPY Dockerfiles/openssl.cnf /etc/pki/tls/openssl.cnf
+WORKDIR /etc/pki/tls
+COPY Dockerfiles/openssl-ca.cnf .
+COPY Dockerfiles/openssl-server.cnf .
+COPY Dockerfiles/openssl-client.cnf .
 
-RUN systemctl enable postfix && \
-    systemctl enable dovecot
+# 受信サーバのインストール
+RUN dnf -y install dovecot
+COPY Dockerfiles/dovecot.conf /etc/dovecot/dovecot.conf
+COPY Dockerfiles/10-mail.conf /etc/dovecot/conf.d/10-mail.conf
+RUN systemctl enable dovecot
