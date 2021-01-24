@@ -1,0 +1,4 @@
+set mbox_type=Maildir
+set spoolfile=/home/fronteo01/Maildir
+set folder=/home/fronteo01/Maildir
+

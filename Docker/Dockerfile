@@ -36,4 +36,22 @@ COPY Dockerfiles/openssl-client.cnf .
 RUN dnf -y install dovecot
 COPY Dockerfiles/dovecot.conf /etc/dovecot/dovecot.conf
 COPY Dockerfiles/10-mail.conf /etc/dovecot/conf.d/10-mail.conf
+COPY Dockerfiles/10-auth.conf /etc/dovecot/conf.d/10-auth.conf
+COPY Dockerfiles/10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf
+COPY Dockerfiles/10-master.conf /etc/dovecot/conf.d/10-master.conf
 RUN systemctl enable dovecot
+
+# =====================================
+#                           送信サーバ
+#                          ============
+# 送信サーバのインストール
+RUN dnf -y install postfix rsyslog
+COPY Dockerfiles/main.cf /etc/postfix/main.cf
+RUN systemctl enable postfix rsyslog
+# 送信サーバのユーザ追加
+RUN useradd fronteo01 -s /sbin/nologin
+RUN chmod 777 /var/spool/mail
+
+# メールクライアントのインストール
+RUN dnf -y install telnet mutt passwd
+COPY Dockerfile/.muttrc /root/.muttrc
