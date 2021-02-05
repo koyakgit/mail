@@ -1,0 +1,13 @@
+{
+    "python.pythonPath": "/usr/local/bin/python",
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "git.ignoreLimitWarning": true,
+    "java.configuration.updateBuildConfiguration": "automatic"
+}
